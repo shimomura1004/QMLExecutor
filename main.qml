@@ -2,6 +2,9 @@ import QtQuick 2.3
 import QtQuick.Window 2.2
 
 Window {
+    id: root
+    property string state: "home"
+
     visible: true
     width: 200
     height: 300
@@ -21,7 +24,11 @@ Window {
         MouseArea {
             id: ma1
             anchors.fill: parent
-            onClicked: popup1.visible = true
+            visible: !popup1.visible && !popup2.visible
+            onClicked: {
+                root.state = "popup1";
+                popup1.visible = true;
+            }
         }
     }
 
@@ -40,7 +47,11 @@ Window {
         MouseArea {
             id: ma2
             anchors.fill: parent
-            onClicked: popup2.visible = true
+            visible: !popup1.visible && !popup2.visible
+            onClicked: {
+                root.state = "popup2";
+                popup2.visible = true;
+            }
         }
     }
 
@@ -62,7 +73,10 @@ Window {
                 id: ma1_back
                 anchors.fill: parent
                 visible: popup1.visible
-                onClicked: popup1.visible = false
+                onClicked: {
+                    root.state = "home";
+                    popup1.visible = false;
+                }
             }
         }
     }
@@ -84,7 +98,10 @@ Window {
                 id: ma2_back
                 anchors.fill: parent
                 visible: popup2.visible
-                onClicked: popup2.visible = false
+                onClicked: {
+                    root.state = "home";
+                    popup2.visible = false;
+                }
             }
         }
     }

@@ -22,6 +22,7 @@ protected:
 
     Execution *currentExecution_;
     QList<Execution*> queue_;
+    QSet<QString> reachedState_;
 
     QString getId(QQmlApplicationEngine *engine, QObject *obj);
 

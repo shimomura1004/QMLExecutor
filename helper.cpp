@@ -42,9 +42,6 @@ void Helper::findClickableEventHandlers(Execution* execution, QSet<QObject*> &ob
 void Helper::replay(Helper::Execution *execution)
 {
     qDebug() << "###########";
-//    QEventLoop loop;
-//    QTimer::singleShot(1000, &loop, SLOT(quit()));
-//    loop.exec();
 
     EventSequence eventSequence = execution->eventSequence;
     foreach (auto id, eventSequence) {
@@ -62,10 +59,6 @@ void Helper::replay(Helper::Execution *execution)
 
         auto event = new QQuickMouseEvent(0, 0, Qt::LeftButton, Qt::NoButton, Qt::NoModifier);
         QMetaObject::invokeMethod(objects.toList().first(), "clicked", Q_ARG(QQuickMouseEvent*, event));
-
-//        QEventLoop loop;
-//        QTimer::singleShot(1000, &loop, SLOT(quit()));
-//        loop.exec();
     }
 }
 
@@ -75,6 +68,13 @@ void Helper::execute()
     currentExecution_->engine->rootContext()->setContextProperty("Helper", this);
 
     replay(currentExecution_);
+
+    auto state = currentExecution_->engine->rootObjects().first()->property("state").toString();
+    qDebug() << "state:" << state;
+    if (reachedState_.contains(state)) {
+        return;
+    }
+    reachedState_.insert(state);
 
     QSet<QObject*> objects;
     findClickableEventHandlers(currentExecution_, objects);
@@ -94,9 +94,10 @@ void Helper::execute()
         return;
     }
 
-    qDebug() << "length" << queue_.length();
-    if (queue_.length() > 20)
+    if (queue_.length() > 20) {
+        qCritical() << "To many state";
         return;
+    }
 
     currentExecution_ = queue_.takeFirst();
     execute();
