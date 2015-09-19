@@ -1,0 +1,92 @@
+import QtQuick 2.3
+import QtQuick.Window 2.2
+
+Window {
+    visible: true
+    width: 200
+    height: 300
+
+    Rectangle {
+        anchors.top: parent.top
+        width: 200
+        height: 100
+        color: "red"
+
+        Text {
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: "Button1"
+        }
+
+        MouseArea {
+            id: ma1
+            anchors.fill: parent
+            onClicked: popup1.visible = true
+        }
+    }
+
+    Rectangle {
+        anchors.bottom: parent.bottom
+        width: 200
+        height: 100
+        color: "blue"
+
+        Text {
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: "Button2"
+        }
+
+        MouseArea {
+            id: ma2
+            anchors.fill: parent
+            onClicked: popup2.visible = true
+        }
+    }
+
+
+    Rectangle {
+        id: popup1
+        visible: false
+        anchors.fill: parent
+        color: "gray"
+
+        Rectangle {
+            width: 100
+            height: 50
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.verticalCenter: parent.verticalCenter
+            color: "orange"
+
+            MouseArea {
+                id: ma1_back
+                anchors.fill: parent
+                visible: popup1.visible
+                onClicked: popup1.visible = false
+            }
+        }
+    }
+
+    Rectangle {
+        id: popup2
+        visible: false
+        anchors.fill: parent
+        color: "yellow"
+
+        Rectangle {
+            width: 100
+            height: 50
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.verticalCenter: parent.verticalCenter
+            color: "purple"
+
+            MouseArea {
+                id: ma2_back
+                anchors.fill: parent
+                visible: popup2.visible
+                onClicked: popup2.visible = false
+            }
+        }
+    }
+}
+
