@@ -1,5 +1,7 @@
 #include "helper.h"
 #include <QQmlContext>
+#include <QQuickWindow>
+#include <QDir>
 #include <QDebug>
 #include <QTimer>
 
@@ -71,20 +73,28 @@ void Helper::execute()
 
     auto state = currentExecution_->engine->rootObjects().first()->property("state").toString();
     qDebug() << "state:" << state;
-    if (reachedState_.contains(state)) {
-        return;
+    if (!reachedState_.contains(state)) {
+        reachedState_.insert(state);
+
+        QSet<QObject*> objects;
+        findClickableEventHandlers(currentExecution_, objects);
+
+        foreach (auto obj, objects) {
+            Execution *execution = new Execution;
+            QString id = getId(currentExecution_->engine, obj);
+            execution->eventSequence = currentExecution_->eventSequence;
+            execution->eventSequence.push_back(id);
+            queue_.push_back(execution);
+        }
+
+        static int count = 0;
+        QString path = QDir::currentPath() + QStringLiteral("/hoge%1.jpg").arg(count);
+        auto window = qobject_cast<QQuickWindow*>(currentExecution_->engine->rootObjects().first());
+        window->grabWindow().save(path);
+        count++;
     }
-    reachedState_.insert(state);
-
-    QSet<QObject*> objects;
-    findClickableEventHandlers(currentExecution_, objects);
-
-    foreach (auto obj, objects) {
-        Execution *execution = new Execution;
-        QString id = getId(currentExecution_->engine, obj);
-        execution->eventSequence = currentExecution_->eventSequence;
-        execution->eventSequence.push_back(id);
-        queue_.push_back(execution);
+    else {
+        qDebug() << "end";
     }
 
     delete currentExecution_->engine;

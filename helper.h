@@ -6,12 +6,17 @@
 #include <QList>
 #include <QSet>
 
+// todo: support in-handler branching
+
+// todo: divide into small classes
 class Helper : public QObject
 {
     Q_OBJECT
 
+    // todo: event sequence should have target and event kind
     typedef QList<QString> EventSequence;
 
+    // todo: separate as class
     struct Execution {
         QQmlApplicationEngine *engine;
         EventSequence eventSequence;
@@ -24,6 +29,7 @@ protected:
     QList<Execution*> queue_;
     QSet<QString> reachedState_;
 
+    // todo: use xpath instead of id
     QString getId(QQmlApplicationEngine *engine, QObject *obj);
 
     template<typename Func>
@@ -41,10 +47,11 @@ protected:
         }
     }
 
-    //void traverse(QObject *obj, QSet<QObject*> &objects, bool(*judge)(QObject*));
+    // todo: find handlers, excluding hiden ones
     void findAvailableEventHandlers(Execution* execution, QSet<QObject*> &objects, bool(*judge)(QObject*));
     void findClickableEventHandlers(Execution* execution, QSet<QObject*> &objects);
 
+    // todo: optimize replay
     void replay(Execution *execution);
 
     void execute();
