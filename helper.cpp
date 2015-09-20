@@ -2,6 +2,7 @@
 #include <QQmlContext>
 #include <QQuickWindow>
 #include <QDir>
+
 #include <QDebug>
 #include <QTimer>
 
@@ -72,9 +73,10 @@ void Helper::execute()
     replay(currentExecution_);
 
     auto state = currentExecution_->engine->rootObjects().first()->property("state").toString();
-    qDebug() << "state:" << state;
-    if (!reachedState_.contains(state)) {
-        reachedState_.insert(state);
+    auto substate = currentExecution_->engine->rootObjects().first()->property("substate").toBool();
+    qDebug() << "state:" << state << substate;
+    if (!reachedState_.contains(state + substate)) {
+        reachedState_.insert(state + substate);
 
         QSet<QObject*> objects;
         findClickableEventHandlers(currentExecution_, objects);
@@ -88,7 +90,7 @@ void Helper::execute()
         }
 
         static int count = 0;
-        QString path = QDir::currentPath() + QStringLiteral("/hoge%1.jpg").arg(count);
+        QString path = QDir::homePath() + QStringLiteral("/hoge%1.jpg").arg(count);
         auto window = qobject_cast<QQuickWindow*>(currentExecution_->engine->rootObjects().first());
         window->grabWindow().save(path);
         count++;

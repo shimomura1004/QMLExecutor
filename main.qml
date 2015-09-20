@@ -4,57 +4,63 @@ import QtQuick.Window 2.2
 Window {
     id: root
     property string state: "home"
+    property bool substate: true
 
     visible: true
     width: 200
     height: 300
 
-    Rectangle {
-        anchors.top: parent.top
-        width: 200
-        height: 100
-        color: "red"
+    Column {
+        Rectangle {
+            width: 200
+            height: 100
+            color: "red"
 
-        Text {
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.horizontalCenter: parent.horizontalCenter
-            text: "Button1"
-        }
+            Text {
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: "Button1"
+            }
 
-        MouseArea {
-            id: ma1
-            anchors.fill: parent
-            visible: !popup1.visible && !popup2.visible
-            onClicked: {
-                root.state = "popup1";
-                popup1.visible = true;
+            MouseArea {
+                id: ma1
+                anchors.fill: parent
+                visible: !popup1.visible && !popup2.visible
+                onClicked: {
+                    root.state = "popup1";
+                    popup1.visible = true;
+                }
             }
         }
-    }
 
-    Rectangle {
-        anchors.bottom: parent.bottom
-        width: 200
-        height: 100
-        color: "blue"
+        Rectangle {
+            width: 200
+            height: 100
+            color: "blue"
 
-        Text {
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.horizontalCenter: parent.horizontalCenter
-            text: "Button2"
-        }
+            Text {
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: "Button2"
+            }
 
-        MouseArea {
-            id: ma2
-            anchors.fill: parent
-            visible: !popup1.visible && !popup2.visible
-            onClicked: {
-                root.state = "popup2";
-                popup2.visible = true;
+            MouseArea {
+                id: ma2
+                anchors.fill: parent
+                visible: !popup1.visible && !popup2.visible
+                onClicked: {
+                    root.state = "popup2";
+                    popup2.visible = true;
+                }
             }
         }
-    }
 
+        Loader {
+            width: parent.width
+            height: 100
+            source: "SubView.qml"
+        }
+    }
 
     Rectangle {
         id: popup1
