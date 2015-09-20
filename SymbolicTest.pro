@@ -4,6 +4,8 @@ QT += qml quick
 CONFIG += c++11
 
 SOURCES += main.cpp \
+    execution.cpp \
+    executor.cpp \
     helper.cpp
 
 RESOURCES += qml.qrc
@@ -15,6 +17,8 @@ QML_IMPORT_PATH =
 include(deployment.pri)
 
 HEADERS += \
+    execution.h \
+    executor.h \
     helper.h
 
 INCLUDEPATH += \

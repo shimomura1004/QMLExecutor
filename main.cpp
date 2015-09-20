@@ -1,7 +1,7 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
-#include "helper.h"
+#include "executor.h"
 
 int main(int argc, char *argv[])
 {
@@ -10,8 +10,8 @@ int main(int argc, char *argv[])
 //    QQmlApplicationEngine engine(QUrl("qrc:/main.qml"));
 //    return app.exec();
 
-    Helper executor(QUrl("qrc:/main.qml"));
-    executor.run();
+    Executor executor(QUrl("qrc:/main.qml"));
+    executor.execute();
 
     return 0;
 }
