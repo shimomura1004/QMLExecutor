@@ -6,7 +6,8 @@ CONFIG += c++11
 SOURCES += main.cpp \
     execution.cpp \
     executor.cpp \
-    helper.cpp
+    helper.cpp \
+    finders/clickableobjectfinder.cpp
 
 RESOURCES += qml.qrc
 
@@ -19,7 +20,8 @@ include(deployment.pri)
 HEADERS += \
     execution.h \
     executor.h \
-    helper.h
+    helper.h \
+    finders/clickableobjectfinder.h
 
 INCLUDEPATH += \
     ../../../Qt/5.4/clang_64/lib/QtQml.framework/Versions/5/Headers/5.4.2/QtQml \

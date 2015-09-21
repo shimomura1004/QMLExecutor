@@ -52,6 +52,7 @@ void Execution::takeScreenshot(QString path)
     window->grabWindow().save(path);
 }
 
+// todo: consider parent property
 QSet<Execution::ID> Execution::getInvokableEventHandlers()
 {
     auto judge = [](QObject *obj){

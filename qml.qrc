@@ -2,5 +2,6 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>SubView.qml</file>
+        <file>NestedView.qml</file>
     </qresource>
 </RCC>
