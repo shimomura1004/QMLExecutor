@@ -14,6 +14,21 @@ Rectangle {
         color: "gray"
         Rectangle {
             objectName: "unclickable_child"
+
+            MouseArea {
+                objectName: "hidden_1"
+                anchors.fill: parent
+                onClicked: console.log("hidden1")
+            }
+        }
+
+        MouseArea {
+            objectName: "hidden_2"
+            x: 0
+            y: 0
+            width: 10
+            height: 10
+            onClicked: console.log("hidden2")
         }
     }
 
@@ -29,7 +44,19 @@ Rectangle {
             anchors.fill: parent
             color: "green"
         }
+        MouseArea {
+            objectName: "ma_1"
+            anchors.fill: parent
+            onClicked: console.log("ma_1")
+
+            MouseArea {
+                objectName: "ma_1_1"
+                anchors.fill: parent
+                onClicked: console.log("ma_1_1")
+            }
+        }
     }
+
     Rectangle {
         objectName: "clickable_2"
         x: 100
@@ -45,6 +72,12 @@ Rectangle {
             width: 10
             height: 10
             color: "orange"
+
+            MouseArea {
+                objectName: "ma_2_1_1"
+                anchors.fill: parent
+                onClicked: console.log("ma_2_1_1")
+            }
         }
     }
 

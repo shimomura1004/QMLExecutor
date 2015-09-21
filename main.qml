@@ -25,10 +25,16 @@ Window {
             MouseArea {
                 id: ma1
                 anchors.fill: parent
-                visible: !popup1.visible && !popup2.visible
                 onClicked: {
                     root.state = "popup1";
                     popup1.visible = true;
+
+                    if (true) {
+
+                    }
+                    else {
+
+                    }
                 }
             }
         }
@@ -47,7 +53,6 @@ Window {
             MouseArea {
                 id: ma2
                 anchors.fill: parent
-                visible: !popup1.visible && !popup2.visible
                 onClicked: {
                     root.state = "popup2";
                     popup2.visible = true;
@@ -78,7 +83,6 @@ Window {
             MouseArea {
                 id: ma1_back
                 anchors.fill: parent
-                visible: popup1.visible
                 onClicked: {
                     root.state = "home";
                     popup1.visible = false;
@@ -103,7 +107,6 @@ Window {
             MouseArea {
                 id: ma2_back
                 anchors.fill: parent
-                visible: popup2.visible
                 onClicked: {
                     root.state = "home";
                     popup2.visible = false;

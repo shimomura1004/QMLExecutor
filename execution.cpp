@@ -1,5 +1,6 @@
 #include "execution.h"
 #include "helper.h"
+#include "finders/clickableobjectfinder.h"
 
 #include <private/qquickmousearea_p.h>
 #include <private/qquickevents_p_p.h>
@@ -49,24 +50,23 @@ void Execution::execute()
 void Execution::takeScreenshot(QString path)
 {
     auto window = qobject_cast<QQuickWindow*>(engine_->rootObjects().first());
-    window->grabWindow().save(path);
+    if (window) {
+        window->grabWindow().save(path);
+    }
+    else {
+        qCritical() << "root object isn't QQuickWindow, but" << engine_->rootObjects().first();
+    }
 }
 
-// todo: consider parent property
 QSet<Execution::ID> Execution::getInvokableEventHandlers()
 {
-    auto judge = [](QObject *obj){
-        bool visible = obj->property("visible").toBool();
-        bool enabled = obj->property("enabled").toBool();
-        bool hasClickedHandler = obj->metaObject()->indexOfMethod("clicked(QQuickMouseEvent*)") >= 0;
-        return visible && enabled && hasClickedHandler;
-    };
+    QSet<Execution::ID> ids;
 
-    decltype(getInvokableEventHandlers()) ids;
     foreach (auto object, engine_->rootObjects()) {
-        foreach (auto obj, Helper::findAll(object, judge)) {
-            ids.insert(Helper::getId(engine_, obj));
+        foreach (auto item, ClickableObjectFinder::find(qobject_cast<QQuickWindow*>(object))) {
+            ids.insert(Helper::getId(engine_, item));
         }
     }
+
     return ids;
 }

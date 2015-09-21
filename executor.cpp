@@ -18,6 +18,7 @@ Executor::Executor(QUrl path, QObject *parent)
 
 void Executor::execute()
 {
+    uint counter = 0;
     while (!queue_.isEmpty()) {
         Execution *execution = queue_.takeFirst();
         execution->execute();
@@ -25,7 +26,7 @@ void Executor::execute()
         auto f = [](QQmlApplicationEngine *engine){
             auto state = engine->rootObjects().first()->property("state").toString();
             auto substate = engine->rootObjects().first()->property("substate").toBool();
-            return state + substate;
+            return state + (substate ? "true" : "false");
         };
         auto state = execution->getState<QString>(f);
 
@@ -38,18 +39,19 @@ void Executor::execute()
                 queue_.push_back(newExecution);
             }
 
-            static int count = 0;
-            QString path = QDir::homePath() + QStringLiteral("/hoge%1.jpg").arg(count);
+            QString path = QDir::homePath() + QStringLiteral("/hoge%1.jpg").arg(state);
+            qDebug() << "Taking screenshot for state:" << state << path;
             execution->takeScreenshot(path);
-            count++;
         }
 
         delete execution;
         execution = nullptr;
 
-        if (queue_.length() > 20) {
-            qCritical() << "To many state";
+        if (counter++ > 20) {
+            qCritical() << "Aborting";
             return;
         }
     }
+
+    qDebug() << "Executed" << counter << "paths";
 }

@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QQuickItem>
+#include <QQuickWindow>
 #include <QSet>
 
 class ClickableObjectFinder : public QObject
@@ -14,8 +15,14 @@ private:
 protected:
     static bool contains(QQuickItem *container, QQuickItem *containee);
 
+    static bool isVisible(QQuickItem *item);
+    static bool isEnabled(QQuickItem *item);
+    static bool hasMethod(QQuickItem *item, QString methodName);
+
 public:
-    static QSet<QQuickItem *> find(QObject * object);
+    static QList<QQuickItem*> find(QQuickItem* item);
+    static QList<QQuickItem*> find(QQuickWindow* item);
+
 };
 
 #endif // CLICKABLEOBJECTFINDER_H

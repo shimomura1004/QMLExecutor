@@ -15,20 +15,57 @@ bool ClickableObjectFinder::contains(QQuickItem *container, QQuickItem *containe
     return container->contains(topleft) && container->contains(bottomright);
 }
 
-QSet<QQuickItem*> ClickableObjectFinder::find(QObject *object)
-{
-    QObjectList visibleChildren;
-    foreach (auto child, object->children()) {
-        auto visible = child->property("visible");
 
+bool ClickableObjectFinder::isVisible(QQuickItem *item) {
+    auto visible = item->property("visible");
+    return !visible.isValid() || visible.toBool();
+}
+
+bool ClickableObjectFinder::isEnabled(QQuickItem *item) {
+    auto enabled = item->property("enabled");
+    return !enabled.isValid() || enabled.toBool();
+}
+
+bool ClickableObjectFinder::hasMethod(QQuickItem *item, QString methodName) {
+     return item->metaObject()->indexOfMethod("clicked(QQuickMouseEvent*)") >= 0;
+}
+
+QList<QQuickItem*> ClickableObjectFinder::find(QQuickItem* item)
+{
+    if (!item) {
+        return QList<QQuickItem*>();
+    }
+
+    // check if item is clickable:
+    // visible, enabled, covered by child items and has clicked method
+    QList<QQuickItem*> result;
+    if (isVisible(item) && isEnabled(item) && hasMethod(item, "clicked")) {
+        bool isCoveredByChild = false;
+        foreach (auto child, item->children()) {
+            // todo: consider object that is covered by multiple object
+            if (contains(qobject_cast<QQuickItem*>(child), item)) {
+                isCoveredByChild = true;
+                break;
+            }
+        }
+
+        if (!isCoveredByChild) {
+            result.push_back(item);
+        }
+    }
+
+    // recursively check for item's children
+    QObjectList visibleChildren;
+    foreach (auto child, item->children()) {
         // push visible items in reverse order
         // todo: consider z-order
-        if (!visible.isValid() || visible.toBool()) {
+        // todo: QQmlComponent is not a QQuickWindow nor QQuickItem
+        if (qobject_cast<QQuickItem*>(child) && isVisible(qobject_cast<QQuickItem*>(child))) {
             visibleChildren.push_front(child);
         }
     }
 
-    // check from upper items
+    // remove covered items
     QList<QQuickItem*> clickableItems;
     foreach (auto child, visibleChildren) {
         auto childItem = qobject_cast<QQuickItem*>(child);
@@ -47,17 +84,21 @@ QSet<QQuickItem*> ClickableObjectFinder::find(QObject *object)
         }
     }
 
-//    QPoint topleft(object->x(), object->y());
-//    QPoint bottomright(object->x() + object->width(),
-//                       object->y() + object->height());
-//    foreach (auto clickableItem, clickableItems) {
+    foreach (auto clickableItem, clickableItems) {
+        result.append(find(clickableItem));
+    }
 
-//    }
+    return result;
+}
 
-//    foreach (auto clickableItem, clickableItems) {
-//        find(clickableItem);
-//    }
+QList<QQuickItem *> ClickableObjectFinder::find(QQuickWindow *item)
+{
+    QList<QQuickItem*> result;
 
-    qDebug() << clickableItems;
-    return clickableItems.toSet();
+    foreach (auto child, item->children()) {
+        auto quickItem = qobject_cast<QQuickItem*>(child);
+        result.append(find(quickItem));
+    }
+
+    return result;
 }
