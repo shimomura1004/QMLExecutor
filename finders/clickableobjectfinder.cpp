@@ -1,6 +1,5 @@
 #include "clickableobjectfinder.h"
 #include <QQmlProperty>
-#include <QDebug>
 
 ClickableObjectFinder::ClickableObjectFinder(QObject *parent) : QObject(parent)
 {
@@ -8,13 +7,13 @@ ClickableObjectFinder::ClickableObjectFinder(QObject *parent) : QObject(parent)
 
 bool ClickableObjectFinder::contains(QQuickItem *container, QQuickItem *containee)
 {
-    QPoint topleft(containee->x(), containee->y());
-    QPoint bottomright(containee->x() + containee->width(),
-                       containee->y() + containee->height());
+    const int x1 = containee->x() - container->x();
+    const int y1 = containee->y() - container->y();
+    const int x2 = x1 + containee->width();
+    const int y2 = y1 + containee->height();
 
-    return container->contains(topleft) && container->contains(bottomright);
+    return containee->contains(QPointF(x1, y1)) && containee->contains(QPointF(x2, y2));
 }
-
 
 bool ClickableObjectFinder::isVisible(QQuickItem *item) {
     auto visible = item->property("visible");
@@ -26,8 +25,8 @@ bool ClickableObjectFinder::isEnabled(QQuickItem *item) {
     return !enabled.isValid() || enabled.toBool();
 }
 
-bool ClickableObjectFinder::hasMethod(QQuickItem *item, QString methodName) {
-     return item->metaObject()->indexOfMethod("clicked(QQuickMouseEvent*)") >= 0;
+bool ClickableObjectFinder::hasMethod(QQuickItem *item, const char *methodName) {
+     return item->metaObject()->indexOfMethod(methodName) >= 0;
 }
 
 QList<QQuickItem*> ClickableObjectFinder::find(QQuickItem* item)
@@ -39,7 +38,7 @@ QList<QQuickItem*> ClickableObjectFinder::find(QQuickItem* item)
     // check if item is clickable:
     // visible, enabled, covered by child items and has clicked method
     QList<QQuickItem*> result;
-    if (isVisible(item) && isEnabled(item) && hasMethod(item, "clicked")) {
+    if (isVisible(item) && isEnabled(item) && hasMethod(item, "clicked(QQuickMouseEvent*)")) {
         bool isCoveredByChild = false;
         foreach (auto child, item->children()) {
             // todo: consider object that is covered by multiple object
@@ -96,8 +95,7 @@ QList<QQuickItem *> ClickableObjectFinder::find(QQuickWindow *item)
     QList<QQuickItem*> result;
 
     foreach (auto child, item->children()) {
-        auto quickItem = qobject_cast<QQuickItem*>(child);
-        result.append(find(quickItem));
+        result.append(find(qobject_cast<QQuickItem*>(child)));
     }
 
     return result;

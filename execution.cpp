@@ -5,6 +5,7 @@
 #include <private/qquickmousearea_p.h>
 #include <private/qquickevents_p_p.h>
 
+#include <QQmlContext>
 #include <QQuickWindow>
 #include <QDebug>
 
@@ -33,6 +34,7 @@ Execution *Execution::copy(const Execution *execution, Execution::ID id)
 void Execution::execute()
 {
     engine_ = new QQmlApplicationEngine(url_);
+    engine_->rootContext()->setContextProperty("Executor", this);
 
     foreach (auto targetId, eventSequence_) {
         if (auto obj = Helper::getObject(engine_, targetId)) {
@@ -69,4 +71,10 @@ QSet<Execution::ID> Execution::getInvokableEventHandlers()
     }
 
     return ids;
+}
+
+bool Execution::branch(bool condition)
+{
+    qDebug() << Q_FUNC_INFO << "called branch";
+    return condition;
 }

@@ -12,6 +12,7 @@ Window {
 
     Column {
         Rectangle {
+            objectName: "red_rectangle"
             width: 200
             height: 100
             color: "red"
@@ -24,12 +25,13 @@ Window {
 
             MouseArea {
                 id: ma1
+                objectName: "ma1"
                 anchors.fill: parent
                 onClicked: {
                     root.state = "popup1";
                     popup1.visible = true;
 
-                    if (true) {
+                    if (Executor.branch(true)) {
 
                     }
                     else {
@@ -40,6 +42,7 @@ Window {
         }
 
         Rectangle {
+            objectName: "blue_rectangle"
             width: 200
             height: 100
             color: "blue"
@@ -52,6 +55,7 @@ Window {
 
             MouseArea {
                 id: ma2
+                objectName: "ma2"
                 anchors.fill: parent
                 onClicked: {
                     root.state = "popup2";
@@ -61,6 +65,7 @@ Window {
         }
 
         Loader {
+            objectName: "loader"
             width: parent.width
             height: 100
             source: "SubView.qml"
@@ -69,11 +74,13 @@ Window {
 
     Rectangle {
         id: popup1
+        objectName: "popup1"
         visible: false
         anchors.fill: parent
         color: "gray"
 
         Rectangle {
+            objectName: "popup1-1"
             width: 100
             height: 50
             anchors.horizontalCenter: parent.horizontalCenter
@@ -82,6 +89,7 @@ Window {
 
             MouseArea {
                 id: ma1_back
+                objectName: "ma1_back"
                 anchors.fill: parent
                 onClicked: {
                     root.state = "home";
@@ -93,6 +101,7 @@ Window {
 
     Rectangle {
         id: popup2
+        objectName: "popup2"
         visible: false
         anchors.fill: parent
         color: "yellow"
@@ -106,6 +115,7 @@ Window {
 
             MouseArea {
                 id: ma2_back
+                objectName: "ma2_back"
                 anchors.fill: parent
                 onClicked: {
                     root.state = "home";

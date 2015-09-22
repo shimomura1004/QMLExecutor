@@ -17,7 +17,7 @@ protected:
 
     static bool isVisible(QQuickItem *item);
     static bool isEnabled(QQuickItem *item);
-    static bool hasMethod(QQuickItem *item, QString methodName);
+    static bool hasMethod(QQuickItem *item, const char *methodName);
 
 public:
     static QList<QQuickItem*> find(QQuickItem* item);

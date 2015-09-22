@@ -36,10 +36,12 @@ void Executor::execute()
             auto ids = execution->getInvokableEventHandlers();
             foreach (auto id, ids) {
                 Execution *newExecution = Execution::copy(execution, id);
+                // todo: optimize execution by re-using the current execution.
+                //       restart from initial state costs much.
                 queue_.push_back(newExecution);
             }
 
-            QString path = QDir::homePath() + QStringLiteral("/hoge%1.jpg").arg(state);
+            QString path = QDir::homePath() + QStringLiteral("/%1.jpg").arg(state);
             qDebug() << "Taking screenshot for state:" << state << path;
             execution->takeScreenshot(path);
         }

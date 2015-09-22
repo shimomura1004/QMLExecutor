@@ -44,6 +44,8 @@ public:
 
     void takeScreenshot(QString path);
     QSet<ID> getInvokableEventHandlers();
+
+    Q_INVOKABLE bool branch(bool condition);
 };
 
 #endif // EXECUTION_H
