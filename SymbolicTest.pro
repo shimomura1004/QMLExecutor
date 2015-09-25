@@ -21,7 +21,8 @@ HEADERS += \
     execution.h \
     executor.h \
     helper.h \
-    finders/clickableobjectfinder.h
+    finders/clickableobjectfinder.h \
+    executionqueue.h
 
 QMAKE_CXXFLAGS += \
     -isystem ../../../Qt/5.4/clang_64/lib/QtQml.framework/Versions/5/Headers/5.4.2/QtQml \

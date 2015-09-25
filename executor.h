@@ -2,9 +2,7 @@
 #define EXECUTOR_H
 
 #include <QObject>
-#include <QQmlApplicationEngine>
-#include <QList>
-#include <QSet>
+#include "executionqueue.h"
 
 #include "execution.h"
 
@@ -15,8 +13,7 @@ class Executor : public QObject
     Q_OBJECT
 
 protected:
-    QList<Execution*> queue_;
-    QSet<QString> reachedState_;
+    ExecutionQueue<QString> queue_;
 
 public:
     explicit Executor(QUrl path, QObject *parent = 0);
