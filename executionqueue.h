@@ -6,9 +6,9 @@
 #include <QSet>
 #include <QDebug>
 
-class Execution;
+class ExecutionBase;
 
-#include "execution.h"
+#include "executionbase.h"
 
 // todo: customizable search order
 // todo: remember the event sequence to reach each state
@@ -18,7 +18,7 @@ class ExecutionQueue
 {
 protected:
     QSet<T> reachedState_;
-    QList<Execution*> queue_;
+    QList<ExecutionBase*> queue_;
 
 public:
     explicit ExecutionQueue() {}
@@ -27,16 +27,16 @@ public:
         return reachedState_.contains(state);
     }
 
-    void push(T state, Execution *execution) {
+    void push(T state, ExecutionBase *execution) {
         reachedState_.insert(state);
         queue_.push_back(execution);
     }
 
-    void unpop(Execution *execution) {
+    void unpop(ExecutionBase *execution) {
         queue_.push_front(execution);
     }
 
-    Execution *pop() {
+    ExecutionBase *pop() {
         if (queue_.empty()) {
             return nullptr;
         }

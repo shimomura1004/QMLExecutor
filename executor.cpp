@@ -4,8 +4,8 @@
 Executor::Executor(QUrl path, QObject *parent)
     : QObject(parent)
 {
-    Execution::setRootQMLPath(path);
-    queue_.push("", new Execution(Execution::EventSequence()));
+    ExecutionBase::setRootQMLPath(path);
+    queue_.push("", new Execution(ExecutionBase::EventSequence()));
 }
 
 void Executor::execute()

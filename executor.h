@@ -3,7 +3,6 @@
 
 #include <QObject>
 #include "executionqueue.h"
-
 #include "execution.h"
 
 // todo: support in-handler branching
