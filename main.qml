@@ -5,6 +5,7 @@ Window {
     id: root
     property string state: "home"
     property bool substate: true
+    property real opac: 1
 
     visible: true
     width: 200
@@ -32,10 +33,19 @@ Window {
                     popup1.visible = true;
 
                     if (Executor.branch(true)) {
-
+                        console.log("true!");
+                        if (Executor.branch(true)) {
+                            root.opac = 0.5;
+                            console.log("true-true!")
+                        }
+                        else {
+                            root.opac = 0.1;
+                            console.log("true-false!")
+                        }
                     }
                     else {
-
+                        root.opac = 1;
+                        console.log("false!");
                     }
                 }
             }
@@ -78,6 +88,7 @@ Window {
         visible: false
         anchors.fill: parent
         color: "gray"
+        opacity: root.opac
 
         Rectangle {
             objectName: "popup1-1"
@@ -105,6 +116,7 @@ Window {
         visible: false
         anchors.fill: parent
         color: "yellow"
+        opacity: root.opac
 
         Rectangle {
             width: 100

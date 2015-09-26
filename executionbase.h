@@ -36,9 +36,10 @@ protected:
     EventSequence eventSequence_;
     EventSequence consumedEventSequence_;
 
-    QList<Branching> branching_;
-    QList< QList<bool> > consumedBranching_;
+    QList<Branching> branchingSequence_;
+    QList< QList<bool> > consumedBranchingSequence_;
     Branching currentBranching_;
+    Branching currentConsumedBranching_;
 
     void addEvent(ID event);
 

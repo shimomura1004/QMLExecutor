@@ -18,7 +18,7 @@ void Executor::execute()
             delete execution;
         }
 
-        if (counter++ > 30) {
+        if (counter++ > 100) {
             qCritical() << "Too much iteration(" << counter << "). Abort.";
             return;
         }

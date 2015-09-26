@@ -31,10 +31,13 @@ bool ExecutionBase::execute(ExecutionQueue<QString> *queue)
 
     // replay event sequence
     while (!eventSequence_.empty()) {
+        currentBranching_.clear();
+        currentConsumedBranching_.clear();
+
         auto targetId = eventSequence_.takeFirst();
         consumedEventSequence_.push_back(targetId);
 
-        currentBranching_ = branching_.takeFirst();
+        currentBranching_ = branchingSequence_.takeFirst();
 
         if (auto obj = Helper::getObject(engine_, targetId)) {
             auto event = new QQuickMouseEvent(0, 0, Qt::LeftButton, Qt::NoButton, Qt::NoModifier);
@@ -44,7 +47,7 @@ bool ExecutionBase::execute(ExecutionQueue<QString> *queue)
             qCritical() << "Unknown ID:" << targetId;
         }
 
-        consumedBranching_.push_back(currentBranching_);
+        consumedBranchingSequence_.push_back(currentConsumedBranching_);
     }
 
     auto state = getState();
@@ -85,13 +88,15 @@ bool ExecutionBase::execute(ExecutionQueue<QString> *queue)
 void ExecutionBase::restart()
 {
     eventSequence_ = consumedEventSequence_ + eventSequence_;
-    branching_ = consumedBranching_ + branching_;
+    consumedEventSequence_.clear();
+    branchingSequence_ = consumedBranchingSequence_ + branchingSequence_;
+    consumedBranchingSequence_.clear();
 }
 
 void ExecutionBase::addEvent(ExecutionBase::ID event)
 {
     eventSequence_.push_back(event);
-    branching_.push_back(Branching());
+    branchingSequence_.push_back(Branching());
 }
 
 void ExecutionBase::copyFrom(ExecutionBase *execution)
@@ -102,8 +107,8 @@ void ExecutionBase::copyFrom(ExecutionBase *execution)
 
     eventSequence_ = execution->eventSequence_;
     consumedEventSequence_ = execution->consumedEventSequence_;
-    branching_ = execution->branching_;
-    consumedBranching_ = execution->consumedBranching_;
+    branchingSequence_ = execution->branchingSequence_;
+    consumedBranchingSequence_ = execution->consumedBranchingSequence_;
 }
 
 void ExecutionBase::takeScreenshot(QString path)
@@ -117,15 +122,28 @@ void ExecutionBase::takeScreenshot(QString path)
     }
 }
 
-bool ExecutionBase::branch(bool condition)
+bool ExecutionBase::branch(bool)
 {
-//    if (currentBranching_.empty()) {
-//        auto newExecution = copyFrom(id);
-//        queue_;
+    qDebug() << this;
+    if (currentBranching_.empty()) {
+        ExecutionBase* exec = clone();
+        exec->copyFrom(this);
 
-//        return true;
-//    }
+        auto newBranching = currentConsumedBranching_;
+        newBranching.push_back(false);
+        exec->branchingSequence_.push_front(newBranching);
+        exec->restart();
+        executionQueue_->push("", exec);
 
-    qDebug() << Q_FUNC_INFO << "called branch";
-    return condition;
+        qDebug() << "CLONE!" << currentConsumedBranching_;
+        currentConsumedBranching_.push_back(true);
+        return true;
+    }
+
+    bool b = currentBranching_.takeFirst();
+    currentConsumedBranching_.push_back(b);
+
+    qDebug() << "replay!" << currentConsumedBranching_;
+
+    return b;
 }

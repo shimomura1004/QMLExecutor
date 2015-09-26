@@ -11,7 +11,8 @@ QString Execution::getState()
 {
     auto state = engine_->rootObjects().first()->property("state").toString();
     auto substate = engine_->rootObjects().first()->property("substate").toBool();
-    return state + (substate ? "true" : "false");
+    auto opacity = engine_->rootObjects().first()->property("opac").toDouble();
+    return state + (substate ? "true" : "false") + QString::number(opacity);
 }
 
 Execution::Execution(QObject *parent)
