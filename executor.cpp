@@ -5,7 +5,7 @@ Executor::Executor(QUrl path, QObject *parent)
     : QObject(parent)
 {
     ExecutionBase::setRootQMLPath(path);
-    queue_.push("", new Execution(ExecutionBase::EventSequence()));
+    queue_.push("", new Execution);
 }
 
 void Executor::execute()
@@ -18,8 +18,8 @@ void Executor::execute()
             delete execution;
         }
 
-        if (counter++ > 20) {
-            qCritical() << "Too much iteration. Abort.";
+        if (counter++ > 30) {
+            qCritical() << "Too much iteration(" << counter << "). Abort.";
             return;
         }
     }

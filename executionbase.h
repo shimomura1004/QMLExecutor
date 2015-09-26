@@ -16,6 +16,7 @@ class ExecutionBase : public QObject
 public:
     // todo: use xpath instead of id
     typedef QString ID;
+    typedef QList<bool> Branching;
 
     // todo: event sequence should have target and event kind
     typedef QList<ID> EventSequence;
@@ -30,10 +31,21 @@ public:
 
 protected:
     QQmlApplicationEngine *engine_;
+    ExecutionQueue<QString> *executionQueue_;
+
     EventSequence eventSequence_;
     EventSequence consumedEventSequence_;
 
-    virtual ExecutionBase *copy(ID id) = 0;
+    QList<Branching> branching_;
+    QList< QList<bool> > consumedBranching_;
+    Branching currentBranching_;
+
+    void addEvent(ID event);
+
+    virtual ExecutionBase *clone() = 0;
+    virtual void copyFrom(ExecutionBase *execution);
+    virtual void restart();
+
     virtual QString getState() = 0;
     virtual QList<ID> getInvokableEventHandlers() = 0;
     virtual void takeScreenshot(QString path);
@@ -41,7 +53,7 @@ protected:
     Q_INVOKABLE virtual bool branch(bool condition);
 
 public:
-    explicit ExecutionBase(EventSequence eventSequence, QObject *parent = 0);
+    explicit ExecutionBase(QObject *parent = 0);
     virtual ~ExecutionBase();
 
     virtual bool execute(ExecutionQueue<QString> *queue);

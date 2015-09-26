@@ -11,10 +11,10 @@
 
 QUrl ExecutionBase::url_;
 
-ExecutionBase::ExecutionBase(EventSequence eventSequence, QObject *parent)
+ExecutionBase::ExecutionBase(QObject *parent)
     : QObject(parent)
     , engine_(nullptr)
-    , eventSequence_(eventSequence)
+    , executionQueue_(nullptr)
 {
 }
 
@@ -27,9 +27,14 @@ bool ExecutionBase::execute(ExecutionQueue<QString> *queue)
     engine_ = new QQmlApplicationEngine(url_, this);
     engine_->rootContext()->setContextProperty("Executor", this);
 
+    executionQueue_ = queue;
+
+    // replay event sequence
     while (!eventSequence_.empty()) {
         auto targetId = eventSequence_.takeFirst();
         consumedEventSequence_.push_back(targetId);
+
+        currentBranching_ = branching_.takeFirst();
 
         if (auto obj = Helper::getObject(engine_, targetId)) {
             auto event = new QQuickMouseEvent(0, 0, Qt::LeftButton, Qt::NoButton, Qt::NoModifier);
@@ -38,6 +43,8 @@ bool ExecutionBase::execute(ExecutionQueue<QString> *queue)
         else {
             qCritical() << "Unknown ID:" << targetId;
         }
+
+        consumedBranching_.push_back(currentBranching_);
     }
 
     auto state = getState();
@@ -45,6 +52,9 @@ bool ExecutionBase::execute(ExecutionQueue<QString> *queue)
     if (queue->contains(state)) {
         return false;
     }
+
+    // todo: create a new class exteinding QQmlApplicationEngine
+    //       to add getInvokableMethod and takeScreenshot
 
     // save screenshot
     QString path = QDir::homePath() + QStringLiteral("/%1.png").arg(state);
@@ -56,16 +66,44 @@ bool ExecutionBase::execute(ExecutionQueue<QString> *queue)
         return false;
     }
 
-    // reusing this execution and push it back
-    this->eventSequence_.push_back(ids.takeFirst());
-    queue->unpop(this);
-
     // add to queue
-    foreach (auto id, ids) {
-        queue->push(state, copy(id));
+    foreach (auto id, ids.mid(1)) {
+        auto exec = clone();
+        exec->copyFrom(this);
+        exec->restart();
+        exec->addEvent(id);
+        queue->push(state, exec);
     }
 
+    // push this execution back for reusing qmlengine
+    addEvent(ids.first());
+    queue->unpop(this);
+
     return true;
+}
+
+void ExecutionBase::restart()
+{
+    eventSequence_ = consumedEventSequence_ + eventSequence_;
+    branching_ = consumedBranching_ + branching_;
+}
+
+void ExecutionBase::addEvent(ExecutionBase::ID event)
+{
+    eventSequence_.push_back(event);
+    branching_.push_back(Branching());
+}
+
+void ExecutionBase::copyFrom(ExecutionBase *execution)
+{
+    if (!execution) {
+        return;
+    }
+
+    eventSequence_ = execution->eventSequence_;
+    consumedEventSequence_ = execution->consumedEventSequence_;
+    branching_ = execution->branching_;
+    consumedBranching_ = execution->consumedBranching_;
 }
 
 void ExecutionBase::takeScreenshot(QString path)
@@ -81,6 +119,13 @@ void ExecutionBase::takeScreenshot(QString path)
 
 bool ExecutionBase::branch(bool condition)
 {
+//    if (currentBranching_.empty()) {
+//        auto newExecution = copyFrom(id);
+//        queue_;
+
+//        return true;
+//    }
+
     qDebug() << Q_FUNC_INFO << "called branch";
     return condition;
 }

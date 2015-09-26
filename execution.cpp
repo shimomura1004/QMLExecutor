@@ -2,6 +2,11 @@
 #include "finders/clickableobjectfinder.h"
 #include "helper.h"
 
+Execution *Execution::clone()
+{
+    return new Execution;
+}
+
 QString Execution::getState()
 {
     auto state = engine_->rootObjects().first()->property("state").toString();
@@ -9,16 +14,9 @@ QString Execution::getState()
     return state + (substate ? "true" : "false");
 }
 
-Execution::Execution(EventSequence eventSequence, QObject *parent)
-    : ExecutionBase(eventSequence, parent)
+Execution::Execution(QObject *parent)
+    : ExecutionBase(parent)
 {
-}
-
-Execution *Execution::copy(ExecutionBase::ID id)
-{
-    EventSequence seq = consumedEventSequence_;
-    seq.append(id);
-    return new Execution(seq);
 }
 
 QList<ExecutionBase::ID> Execution::getInvokableEventHandlers()
@@ -33,3 +31,4 @@ QList<ExecutionBase::ID> Execution::getInvokableEventHandlers()
 
     return ids;
 }
+
