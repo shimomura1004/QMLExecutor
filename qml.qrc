@@ -3,5 +3,6 @@
         <file>main.qml</file>
         <file>SubView.qml</file>
         <file>NestedView.qml</file>
+        <file>HandlertestView.qml</file>
     </qresource>
 </RCC>
