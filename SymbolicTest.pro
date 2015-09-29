@@ -27,6 +27,6 @@ HEADERS += \
     execution.h
 
 QMAKE_CXXFLAGS += \
-    -isystem ../../../Qt/5.4/clang_64/lib/QtQml.framework/Versions/5/Headers/5.4.2/QtQml \
-    -isystem ../../../Qt/5.4/clang_64/lib/QtQuick.framework/Versions/5/Headers/5.4.2/QtQuick \
-    -isystem ../../../Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/5.4.2/QtCore
+    -isystem ../../../Qt/5.5/clang_64/lib/QtQml.framework/Versions/5/Headers/5.5.0/QtQml \
+    -isystem ../../../Qt/5.5/clang_64/lib/QtQuick.framework/Versions/5/Headers/5.5.0/QtQuick \
+    -isystem ../../../Qt/5.5/clang_64/lib/QtCore.framework/Versions/5/Headers/5.5.0/QtCore
