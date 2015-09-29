@@ -4,11 +4,11 @@ QT += qml quick
 CONFIG += c++11
 
 SOURCES += main.cpp \
-    executor.cpp \
     helper.cpp \
     finders/clickableobjectfinder.cpp \
-    executionbase.cpp \
-    execution.cpp
+    execution/execution.cpp \
+    execution/executionbase.cpp \
+    execution/executor.cpp
 
 RESOURCES += qml.qrc
 
@@ -19,12 +19,12 @@ QML_IMPORT_PATH =
 include(deployment.pri)
 
 HEADERS += \
-    executor.h \
     helper.h \
     finders/clickableobjectfinder.h \
-    executionqueue.h \
-    executionbase.h \
-    execution.h
+    execution/execution.h \
+    execution/executionbase.h \
+    execution/executor.h \
+    execution/executionqueue.h
 
 QMAKE_CXXFLAGS += \
     -isystem ../../../Qt/5.5/clang_64/lib/QtQml.framework/Versions/5/Headers/5.5.0/QtQml \
