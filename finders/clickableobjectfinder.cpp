@@ -29,6 +29,7 @@ bool ClickableObjectFinder::hasMethod(QQuickItem *item, const char *methodName) 
      return item->metaObject()->indexOfMethod(methodName) >= 0;
 }
 
+// todo: equivalence partitioning of eventhandlers
 QList<QQuickItem*> ClickableObjectFinder::find(QQuickItem* item)
 {
     if (!item) {

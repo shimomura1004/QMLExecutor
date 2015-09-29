@@ -30,7 +30,45 @@ bool ExecutionBase::execute(ExecutionQueue<QString> *queue)
     }
     executionQueue_ = queue;
 
-    // replay event sequence
+    replayEventSequence();
+
+    auto state = getState();
+
+    if (queue->contains(state)) {
+        return false;
+    }
+
+    // todo: create a new class exteinding QQmlApplicationEngine
+    //       to add getInvokableMethod and takeScreenshot
+
+    // save screenshot
+    QString path = QDir::homePath() + QStringLiteral("/%1.png").arg(state);
+    qDebug() << "Taking screenshot for state:" << state << path;
+    takeScreenshot(path);
+
+    bool reuseThisExecution = addAvairableExecutions(state);
+    return reuseThisExecution;
+}
+
+bool ExecutionBase::operator ==(const ExecutionBase &execution)
+{
+    if (eventSequence_ != execution.eventSequence_) {
+        return false;
+    }
+
+    return branchingSequence_ == execution.branchingSequence_;
+}
+
+void ExecutionBase::restart()
+{
+    eventSequence_ = consumedEventSequence_ + eventSequence_;
+    consumedEventSequence_.clear();
+    branchingSequence_ = consumedBranchingSequence_ + branchingSequence_;
+    consumedBranchingSequence_.clear();
+}
+
+void ExecutionBase::replayEventSequence()
+{
     while (!eventSequence_.empty()) {
         currentBranching_.clear();
         currentConsumedBranching_.clear();
@@ -50,21 +88,10 @@ bool ExecutionBase::execute(ExecutionQueue<QString> *queue)
 
         consumedBranchingSequence_.push_back(currentConsumedBranching_);
     }
+}
 
-    auto state = getState();
-
-    if (queue->contains(state)) {
-        return false;
-    }
-
-    // todo: create a new class exteinding QQmlApplicationEngine
-    //       to add getInvokableMethod and takeScreenshot
-
-    // save screenshot
-    QString path = QDir::homePath() + QStringLiteral("/%1.png").arg(state);
-    qDebug() << "Taking screenshot for state:" << state << path;
-    takeScreenshot(path);
-
+bool ExecutionBase::addAvairableExecutions(const QString &state)
+{
     auto ids = getInvokableEventHandlers();
     if (ids.empty()) {
         return false;
@@ -76,34 +103,17 @@ bool ExecutionBase::execute(ExecutionQueue<QString> *queue)
         exec->copyFrom(this);
         exec->restart();
         exec->addEvent(id);
-        queue->push(state, exec);
+        executionQueue_->push(state, exec);
     }
 
     // push this execution back for reusing qmlengine
     addEvent(ids.first());
 
-    if (!queue->unpop(state, this)) {
+    if (!executionQueue_->unpop(state, this)) {
         return false;
     }
 
     return true;
-}
-
-bool ExecutionBase::operator ==(const ExecutionBase &execution)
-{
-    if (eventSequence_ != execution.eventSequence_) {
-        return false;
-    }
-
-    return branchingSequence_ == execution.branchingSequence_;
-}
-
-void ExecutionBase::restart()
-{
-    eventSequence_ = consumedEventSequence_ + eventSequence_;
-    consumedEventSequence_.clear();
-    branchingSequence_ = consumedBranchingSequence_ + branchingSequence_;
-    consumedBranchingSequence_.clear();
 }
 
 void ExecutionBase::addEvent(ExecutionBase::ID event)

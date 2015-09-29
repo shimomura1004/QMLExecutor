@@ -46,6 +46,8 @@ protected:
     virtual ExecutionBase *clone() = 0;
     virtual void copyFrom(ExecutionBase *execution);
     virtual void restart();
+    virtual void replayEventSequence();
+    virtual bool addAvairableExecutions(const QString &state);
 
     virtual QString getState() = 0;
     virtual QList<ID> getInvokableEventHandlers() = 0;
