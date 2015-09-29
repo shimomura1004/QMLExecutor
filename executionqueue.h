@@ -27,13 +27,35 @@ public:
         return reachedState_.contains(state);
     }
 
-    void push(T state, ExecutionBase *execution) {
+    bool push(T state, ExecutionBase *execution) {
+        foreach (auto e, queue_) {
+            if (*e == *execution) {
+                qDebug() << "DUP!";
+                return false;
+            }
+        }
+
         reachedState_.insert(state);
         queue_.push_back(execution);
+
+        return true;
     }
 
-    void unpop(ExecutionBase *execution) {
+    bool unpop(T state, ExecutionBase *execution) {
+        int index = 0;
+        foreach (auto e, queue_) {
+            if (*e == *execution) {
+                qDebug() << "DUP!";
+                queue_.removeAt(index);
+                break;
+            }
+            index++;
+        }
+
+        reachedState_.insert(state);
         queue_.push_front(execution);
+
+        return true;
     }
 
     ExecutionBase *pop() {

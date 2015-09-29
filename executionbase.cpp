@@ -24,9 +24,10 @@ ExecutionBase::~ExecutionBase()
 
 bool ExecutionBase::execute(ExecutionQueue<QString> *queue)
 {
-    engine_ = new QQmlApplicationEngine(url_, this);
-    engine_->rootContext()->setContextProperty("Executor", this);
-
+    if (!engine_) {
+        engine_ = new QQmlApplicationEngine(url_, this);
+        engine_->rootContext()->setContextProperty("Executor", this);
+    }
     executionQueue_ = queue;
 
     // replay event sequence
@@ -80,9 +81,21 @@ bool ExecutionBase::execute(ExecutionQueue<QString> *queue)
 
     // push this execution back for reusing qmlengine
     addEvent(ids.first());
-    queue->unpop(this);
+
+    if (!queue->unpop(state, this)) {
+        return false;
+    }
 
     return true;
+}
+
+bool ExecutionBase::operator ==(const ExecutionBase &execution)
+{
+    if (eventSequence_ != execution.eventSequence_) {
+        return false;
+    }
+
+    return branchingSequence_ == execution.branchingSequence_;
 }
 
 void ExecutionBase::restart()
@@ -124,7 +137,6 @@ void ExecutionBase::takeScreenshot(QString path)
 
 bool ExecutionBase::branch(bool)
 {
-    qDebug() << this;
     if (currentBranching_.empty()) {
         ExecutionBase* exec = clone();
         exec->copyFrom(this);
@@ -135,15 +147,12 @@ bool ExecutionBase::branch(bool)
         exec->restart();
         executionQueue_->push("", exec);
 
-        qDebug() << "CLONE!" << currentConsumedBranching_;
         currentConsumedBranching_.push_back(true);
         return true;
     }
 
     bool b = currentBranching_.takeFirst();
     currentConsumedBranching_.push_back(b);
-
-    qDebug() << "replay!" << currentConsumedBranching_;
 
     return b;
 }

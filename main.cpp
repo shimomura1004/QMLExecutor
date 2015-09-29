@@ -17,8 +17,9 @@ int main(int argc, char *argv[])
 //    qDebug() << ClickableObjectFinder::find(item);
 //    return app.exec();
 
-    Executor executor(QUrl("qrc:/main.qml"));
+    //Executor executor(QUrl("qrc:/main.qml"));
     //Executor executor(QUrl("qrc:/NestedView.qml"));
+    Executor executor(QUrl("qrc:/HandlertestView.qml"));
     executor.execute();
 
     return 0;

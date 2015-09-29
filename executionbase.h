@@ -59,6 +59,8 @@ public:
 
     virtual bool execute(ExecutionQueue<QString> *queue);
 
+    bool operator ==(const ExecutionBase &execution);
+
 };
 
 #endif // EXECUTIONBASE_H

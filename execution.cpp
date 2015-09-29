@@ -10,9 +10,10 @@ Execution *Execution::clone()
 QString Execution::getState()
 {
     auto state = engine_->rootObjects().first()->property("state").toString();
-    auto substate = engine_->rootObjects().first()->property("substate").toBool();
-    auto opacity = engine_->rootObjects().first()->property("opac").toDouble();
-    return state + (substate ? "true" : "false") + QString::number(opacity);
+//    auto substate = engine_->rootObjects().first()->property("substate").toBool();
+//    auto opacity = engine_->rootObjects().first()->property("opac").toDouble();
+//    return state + (substate ? "true" : "false") + QString::number(opacity);
+    return state;
 }
 
 Execution::Execution(QObject *parent)
